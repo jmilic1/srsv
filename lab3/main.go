@@ -16,18 +16,14 @@ func main() {
 	inputNum := parameters.Inputs
 
 	inputs := make([]*components.Input, inputNum)
-	requestChans := make([]<-chan int, 0)
 	for i := 0; i < inputNum; i++ {
 		answerChan := make(chan int)
-		requestChan := make(chan int)
-		requestChans = append(requestChans, requestChan)
-		inputs[i] = components.NewInput(i, parameters.InputPeriod, parameters.InputPeriod*2, answerChan, requestChan)
+		inputs[i] = components.NewInput(i, parameters.InputPeriod, parameters.InputPeriod*2, answerChan)
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
-	go components.Driver(inputs, requestChans, ctx)
-
 	for _, input := range inputs {
+		go components.Driver(input, ctx)
 		go input.Start(ctx)
 	}
 

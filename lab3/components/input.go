@@ -31,8 +31,7 @@ type Input struct {
 	lastAnswer          int
 	lastAnswerTimestamp time.Time
 
-	AnswerChan  chan int
-	RequestChan chan<- int
+	AnswerChan chan int
 
 	NumberStateChanges int
 	SumAnswerDuration  time.Duration
@@ -40,13 +39,12 @@ type Input struct {
 	MaxAnswerDuration  time.Duration
 }
 
-func NewInput(id int, period time.Duration, startAfter time.Duration, answerChan chan int, requestChan chan<- int) *Input {
+func NewInput(id int, period time.Duration, startAfter time.Duration, answerChan chan int) *Input {
 	return &Input{
-		Id:          id,
-		period:      period,
-		startAfter:  startAfter,
-		AnswerChan:  answerChan,
-		RequestChan: requestChan,
+		Id:         id,
+		period:     period,
+		startAfter: startAfter,
+		AnswerChan: answerChan,
 	}
 }
 
@@ -86,12 +84,8 @@ func (i *Input) do() {
 				i.MaxAnswerDuration = diff
 			}
 
-			// postpone := i.period * time.Duration(rand.Float64()*(parameters.K-1))
-			// time.Sleep(postpone + i.period - time.Now().Sub(i.lastChangeTimestamp))
-			var prod int64
-			for i := 0; i < numIter; i++ {
-				prod *= int64(i)
-			}
+			postpone := i.period * time.Duration(rand.Float64()*(parameters.K-1))
+			time.Sleep(postpone + i.period - time.Now().Sub(i.lastChangeTimestamp))
 
 		default:
 			println("thread " + strconv.Itoa(i.Id) + ": problem: not answered, sleeping")
