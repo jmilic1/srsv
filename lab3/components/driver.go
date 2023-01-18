@@ -4,6 +4,7 @@ import (
 	"context"
 	"math/rand"
 	"strconv"
+	"time"
 )
 
 // Driver should be run before simulation threads
@@ -23,7 +24,8 @@ func Driver(input *Input, ctx context.Context) {
 			}
 
 			if state == lastState {
-				println("upr: input " + strconv.Itoa(input.Id) + ": no new change (" + strconv.Itoa(state) + ")")
+				println("upr: input " + strconv.Itoa(input.Id) + ": no new change (" + strconv.Itoa(state) + "). Sleeping")
+				time.Sleep(time.Millisecond * 30)
 				continue
 			}
 
@@ -37,20 +39,26 @@ func Driver(input *Input, ctx context.Context) {
 }
 
 func simulateProcess() {
-	var prod int64
-	for i := 0; i < numIter; i++ {
-		prod *= int64(i)
-	}
+	random := rand.Intn(100)
 
-	// random := rand.Intn(100)
-	// switch true {
-	// case random < 20:
-	// 	<-time.After(time.Millisecond * 30)
-	// case random >= 20 && random < 70:
-	// 	<-time.After(time.Millisecond * 50)
-	// case random >= 70 && random < 95:
-	// 	<-time.After(time.Millisecond * 80)
-	// case random > 95:
-	// 	<-time.After(time.Millisecond * 120)
-	// }
+	var prod int64
+
+	switch true {
+	case random < 50:
+		for i := 0; i < numIter*0.1; i++ {
+			prod *= int64(i)
+		}
+	case random < 80:
+		for i := 0; i < numIter*0.2; i++ {
+			prod *= int64(i)
+		}
+	case random < 95:
+		for i := 0; i < numIter*0.4; i++ {
+			prod *= int64(i)
+		}
+	case random < 100:
+		for i := 0; i < numIter*0.7; i++ {
+			prod *= int64(i)
+		}
+	}
 }
